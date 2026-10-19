@@ -1,0 +1,9 @@
+# 個人的なメモ・ブリーフはリポジトリに入れない
+private/
+brief*
+*ブリーフ*
+*.private.*
+
+.DS_Store
+__pycache__/
+.claude/

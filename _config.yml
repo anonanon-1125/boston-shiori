@@ -1,0 +1,6 @@
+# GitHub Pages の設定：公開サイトに出さなくていいファイルを除外する
+exclude:
+  - README.md
+  - tools/
+  - .claude/
+  - .gitignore
