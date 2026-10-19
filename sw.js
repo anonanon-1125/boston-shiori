@@ -2,9 +2,9 @@
 // ・ページと予定（html/css/js）は「まずネットから最新を取り、だめなら保存分」
 // ・写真とフォントは「保存分をすぐ出して、裏で最新に更新」
 // 中身を大きく変えたときは VERSION の数字を上げると、古い保存分が消えます。
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "shiori-" + VERSION;
-const CORE = ["./", "index.html", "style.css", "plan.js", "photos.js", "app.js", "manifest.webmanifest", "icons/apple-touch-icon.png"];
+const CORE = ["./", "index.html", "credits.html", "style.css", "plan.js", "photos.js", "app.js", "manifest.webmanifest", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
   self.skipWaiting();

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>写真のクレジット｜11月のボストン</title>
+<meta name="theme-color" content="#f6efe2">
+<meta name="color-scheme" content="light">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap sub-page">
+  <p class="back"><a href="./">← しおりにもどる</a></p>
+
+  <header class="ch-head">
+    <h2>このしおりについて</h2>
+  </header>
+
+  <section class="sub-block">
+    <h3>ホーム画面に追加</h3>
+    <p>Safariの共有ボタン →「ホーム画面に追加」で、アプリみたいに開けます。一度開けば、電波がないところでも見られます。</p>
+  </section>
+
+  <section class="sub-block">
+    <h3>PDF・印刷</h3>
+    <p>しおりの一番上の「PDFがほしいなら」から印刷できます。iPhoneでは、印刷の画面で共有ボタン →「ファイルに保存」を選ぶとPDFになります。</p>
+  </section>
+
+  <section class="sub-block">
+    <h3>写真のクレジット</h3>
+    <p class="credits-note">写真はWikimedia CommonsとFlickrのクリエイティブ・コモンズ作品を、縮小・圧縮して使っています。</p>
+    <ol class="credits" id="credits"></ol>
+  </section>
+
+  <p class="updated" id="updated"></p>
+</main>
+
+<script src="photos.js"></script>
+<script src="plan.js"></script>
+<script>
+  // photos.js の credit がある写真を、すべて並べる
+  (function () {
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function out(url, text) {
+      return '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(text) + "</a>";
+    }
+    if (typeof PHOTOS !== "undefined") {
+      document.getElementById("credits").innerHTML = Object.keys(PHOTOS).map(function (name) {
+        var c = PHOTOS[name].credit;
+        if (!c) return "";
+        return "<li>" + out(c.page, c.title) + (c.author ? " / " + esc(c.author) : "") +
+          (c.license ? " / " + out(c.licenseUrl, c.license) : "") + "</li>";
+      }).join("");
+    }
+    if (typeof TRIP !== "undefined" && TRIP.updated) {
+      var u = String(TRIP.updated).split("-");
+      document.getElementById("updated").textContent = "最終更新 " + u[0] + "年" + Number(u[1]) + "月" + Number(u[2]) + "日";
+    }
+  })();
+</script>
+</body>
+</html>

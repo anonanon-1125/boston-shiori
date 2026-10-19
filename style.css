@@ -124,6 +124,17 @@ b { font-weight: 700; }
   overflow: hidden;
 }
 .cover .wrap { position: relative; }
+.cover-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pdf-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--f-hand); font-weight: 600; font-size: 13px;
+  color: var(--navy);
+  text-decoration: none;
+  border-bottom: 1.5px dashed rgba(31, 53, 87, 0.45);
+  padding-bottom: 1px;
+}
+.pdf-link .ic { width: 16px; height: 16px; color: var(--brick); }
+.pdf-link.busy { opacity: 0.45; }
 .cover-kicker span {
   display: inline-block;
   font-family: var(--f-hand);
@@ -196,7 +207,7 @@ b { font-weight: 700; }
 }
 
 .doodle { position: absolute; width: 26px; height: 26px; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.d1 { right: 120px; top: 20px; stroke: var(--navy); transform: rotate(12deg); }
+.d1 { right: 120px; top: 64px; stroke: var(--navy); transform: rotate(12deg); }
 .d2 { right: 30px; top: 168px; stroke: var(--brick); width: 22px; transform: rotate(-30deg); }
 .d3 { right: 112px; top: 150px; stroke: var(--silver); width: 18px; }
 .d4 { left: 8px; bottom: 96px; stroke: var(--mustard); width: 20px; }
@@ -937,24 +948,20 @@ a.cal-day:active { background: rgba(155, 39, 64, 0.12); }
 /* =============================================================
    おわり
    ============================================================= */
-.site-foot { margin-top: 70px; padding-bottom: max(40px, env(safe-area-inset-bottom)); }
-.foot-end { font-family: var(--f-hand); font-weight: 600; font-size: 20px; text-align: center; color: var(--navy); line-height: 1.7; }
-.a2hs {
-  margin: 26px auto 0;
-  max-width: 420px;
-  font-size: 13px;
-  text-align: center;
-  color: var(--ink-soft);
-  border: 1.5px dashed var(--line);
-  border-radius: 10px;
-  padding: 10px 14px;
-}
-.credits-title { font-size: 14px; margin-top: 40px; color: var(--ink-soft); }
-.credits-note { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
-.credits { margin-top: 8px; display: grid; gap: 4px; font-size: 11.5px; line-height: 1.5; color: var(--ink-soft); word-break: break-word; }
+.site-foot { margin-top: 56px; padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+.foot-links { display: flex; justify-content: center; gap: 22px; font-size: 13px; }
+.foot-links a { color: var(--ink-soft); }
+
+/* 「このしおりについて」ページ */
+.sub-page { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: 48px; }
+.back { font-size: 14px; margin-bottom: 26px; }
+.sub-block { margin-top: 26px; }
+.sub-block h3 { font-size: 16px; color: var(--navy); margin-bottom: 6px; }
+.sub-block p { font-size: 14px; }
+.credits-note { font-size: 12.5px; color: var(--ink-soft); }
+.credits { margin-top: 10px; display: grid; gap: 5px; font-size: 12px; line-height: 1.5; color: var(--ink-soft); word-break: break-word; }
 .credits a { color: var(--ink-soft); }
-.updated { margin-top: 18px; font-size: 12px; color: var(--ink-soft); }
-.to-top { margin-top: 10px; font-size: 13px; }
+.updated { margin-top: 30px; font-size: 12px; color: var(--ink-soft); }
 
 .fab {
   position: fixed;
@@ -1000,4 +1007,68 @@ a.cal-day:active { background: rgba(155, 39, 64, 0.12); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .fab { transition: none; }
+}
+
+/* =============================================================
+   印刷・PDF（「PDFがほしいなら」から）
+   ============================================================= */
+@media print {
+  @page { size: A4; margin: 12mm 12mm 14mm; }
+  html { scroll-behavior: auto; }
+  body {
+    background: #fff;
+    font-size: 12.5px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .fab, .pdf-link, #error-box, noscript, .site-foot, .doodle { display: none !important; }
+  .wrap { max-width: none; padding-left: 0; padding-right: 0; }
+
+  /* 1ページ目：表紙ともくじ */
+  .cover { padding-top: 0; }
+  .cover-title { font-size: 54px; margin-top: 10px; }
+  .cover-stamp { top: 54px; }
+  .cover-photo { width: 50%; margin: 16px auto 0; }
+  .rowhouses { width: 56%; margin: 12px auto 0; }
+  .toc { padding-top: 12px; margin-top: 0; break-inside: avoid; }
+  .toc-title { margin-bottom: 2px; }
+  .toc li a { padding: 4px 2px; }
+
+  /* 章ごとに改ページ */
+  .chapter { padding-top: 0; break-before: page; }
+  #anniversary { margin-top: 0; padding: 6mm 5mm; border: 0; }
+
+  /* 影は印刷で汚くなるので、細い線に */
+  .cal-card, .week, .day, .memo, .note, .spot, .hotel, .collage .photo, .item-photo,
+  .an-photos .photo, .food-photo .photo, .polaroid, .spot .photo {
+    box-shadow: none !important;
+    outline: 1px solid #e6dccb;
+  }
+  .collage .photo, .item-photo, .an-photos .photo, .food-photo .photo, .spot .photo, .polaroid { transform: none !important; }
+
+  /* 写真は小さめに並べる */
+  .collage { grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 14px; }
+  .collage .photo { grid-column: auto !important; padding: 4px; }
+  .collage .photo .ph-img { aspect-ratio: 4 / 3 !important; }
+  .collage .photo::before, .polaroid::before, .cal-card::before, .week::before { display: none; }
+  .item-photo { max-width: 200px; }
+  .an-photos { grid-template-columns: 1fr 1fr; max-width: 70%; }
+  .an-photos .photo:last-child { margin-top: 0; }
+  .food { grid-template-columns: 180px 1fr; }
+  .spots { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .spot { grid-template-columns: 70px 1fr; padding: 8px; }
+  .life-grid { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .note.wide { grid-column: 1 / -1; }
+  .note.wide .ph-img { aspect-ratio: 21 / 9; }
+  .an-lists { grid-template-columns: 1fr 1fr; }
+  .cal-day { min-height: 62px; }
+  .cal-day .lbl { font-size: 10.5px; }
+
+  /* 途中で切れないように */
+  .item, .spot, .note, .day, .memo, .tl-row, .step, figure, .cal-card, .choice, .hotel,
+  .sticky, .solo-memo, .food-list li, .shops li, .route, .cal-key { break-inside: avoid; }
+  h2, h3, h4, .ch-head, .week-top, .week-theme, .week-lead, .spot-head, .blk, .day-head { break-after: avoid; }
+  .week { margin-bottom: 16px; }
+
+  a { color: inherit; }
 }

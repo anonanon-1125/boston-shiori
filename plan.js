@@ -25,7 +25,7 @@ const TRIP = {
   start: "11-06",
   end: "11-29",
   cover: "cover-acorn-street", // 表紙の写真（photos.js の名前）
-  updated: "2026-10-18", // 書き換えたら日付も更新すると、ページ下に出ます
+  updated: "2026-10-19", // 書き換えたら日付も更新すると、ページ下に出ます
   // カレンダーで日付を赤くする祝日
   holidays: [
     { date: "11-11", label: "祝日" },
@@ -524,13 +524,5 @@ const LIFE = [
       "11/26 Thanksgiving（ほぼ全部お休み）",
       "11/27 Black Friday（どこも混む）",
     ],
-  },
-  {
-    id: "life-emergency",
-    title: "緊急のとき",
-    icon: "bell",
-    wide: true,
-    big: "911",
-    lines: ["警察・救急・消防"],
   },
 ];

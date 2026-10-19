@@ -7,7 +7,6 @@
 
   var DOW = ["日", "月", "火", "水", "木", "金", "土"];
   var TAG_CLASS = { "無料": "free", "要予約": "book", "要確認": "check", "元気なら": "maybe", "未定": "tbd", "チーズ": "cheese" };
-  var usedPhotos = []; // ページに出た順（クレジット用）
   var problems = [];
 
   // ---------- 小さな道具 ----------
@@ -64,7 +63,6 @@
       problems.push("photos.js に「" + name + "」という写真がありません");
       return '<figure class="' + cls + ' missing"><div class="ph-img"><span>写真「' + esc(name) + "」がみつかりません</span></div></figure>";
     }
-    if (usedPhotos.indexOf(name) < 0) usedPhotos.push(name);
     var img = '<img src="' + esc(p.src) + '" alt="' + esc(p.alt) + '"' +
       (opt.eager ? ' fetchpriority="high"' : ' loading="lazy"') + ' decoding="async"' +
       (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : "") + ">";
@@ -353,23 +351,6 @@
     }).join("") + "</div>";
   }
 
-  // ---------- クレジット・おまけ ----------
-  function renderFooter() {
-    $("credits").innerHTML = usedPhotos.map(function (name) {
-      var c = PHOTOS[name] && PHOTOS[name].credit;
-      if (!c) return "";
-      return '<li><a href="' + esc(c.page) + '" target="_blank" rel="noopener noreferrer">' + esc(c.title) + "</a>" +
-        (c.author ? " / " + esc(c.author) : "") +
-        (c.license ? ' / <a href="' + esc(c.licenseUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(c.license) + "</a>" : "") + "</li>";
-    }).join("");
-    if (TRIP.updated) {
-      var u = String(TRIP.updated).split("-");
-      $("updated").textContent = "最終更新 " + u[0] + "年" + Number(u[1]) + "月" + Number(u[2]) + "日";
-    }
-    var standalone = window.navigator.standalone || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
-    if (standalone) $("a2hs").hidden = true;
-  }
-
   function addTopButton() {
     var a = document.createElement("a");
     a.href = "#toc";
@@ -381,6 +362,35 @@
     function onScroll() { a.classList.toggle("show", toc.getBoundingClientRect().bottom < 0); }
     addEventListener("scroll", onScroll, { passive: true });
     onScroll();
+  }
+
+  // ---------- 印刷・PDF ----------
+  // 写真は「見えたら読み込む」設定なので、印刷の前に全部読み込んでおく
+  function loadAllImages(timeout) {
+    var imgs = [].slice.call(document.images);
+    imgs.forEach(function (i) { i.loading = "eager"; });
+    var all = Promise.all(imgs.map(function (i) {
+      return i.complete ? 0 : new Promise(function (done) {
+        i.addEventListener("load", done, { once: true });
+        i.addEventListener("error", done, { once: true });
+      });
+    }));
+    return Promise.race([all, new Promise(function (done) { setTimeout(done, timeout); })]);
+  }
+
+  function setupPrint() {
+    var link = $("pdf-link");
+    if (link) link.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (link.classList.contains("busy")) return;
+      link.classList.add("busy");
+      Promise.all([loadAllImages(10000), document.fonts ? document.fonts.ready : 0]).then(function () {
+        link.classList.remove("busy");
+        window.print();
+      });
+    });
+    addEventListener("beforeprint", function () { loadAllImages(0); });
+    if (/[?&]pdf\b/.test(location.search)) loadAllImages(0); // tools などから PDF にするとき用
   }
 
   function showProblems() {
@@ -415,8 +425,8 @@
   run("記念日", renderAnniversary);
   run("おでかけスポット", renderSpots);
   run("暮らしのメモ", renderLife);
-  run("クレジット", renderFooter);
   run("もくじボタン", addTopButton);
+  run("印刷", setupPrint);
   showProblems();
 
   // ページ内リンク付きで開いたとき（例: …/#portsmouth）に、描画後の位置へ
